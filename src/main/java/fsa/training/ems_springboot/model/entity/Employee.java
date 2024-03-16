@@ -21,14 +21,16 @@ public class Employee {
     private Long id;
 
     @Nationalized
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
+    @Column(name = "deleted")
     private boolean deleted;
 
     @Enumerated(EnumType.STRING)

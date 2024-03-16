@@ -1,13 +1,61 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>employee list</title>
+    <title>Employee List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css">
 </head>
 <body>
-<h1>employee list</h1>
+<th:block th:insert="fragment/header"></th:block>
+<!-- Employee list -->
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-header text-bg-dark text-center">Employees List</div>
+                <div class="m-3">
+                    <a th:href="@{/employees/add}" class="btn btn-primary">Add Employee</a>
+                </div>
+                <p class="alert alert-success" th:if="${#strings.equals(param.success, 'update')}">
+                    Update Employee success
+                </p>
+                <p class="alert alert-success" th:if="${#strings.equals(param.success, 'add')}">
+                    Add Employee success
+                </p>
+
+                <table class="table table-sm small table-bordered table align-middle mb-0">
+                    <tr class="table-secondary">
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Date Of Birth</th>
+                        <th>Level</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr th:each="emp : ${employees}">
+                        <td th:text="${emp.getId()}"></td>
+                        <td th:text="${emp.getName()}"></td>
+                        <td th:text="${emp.getEmail()}"></td>
+                        <td th:text="${emp.getDateOfBirth()}"></td>
+                        <td th:text="${emp.getLevel()}"></td>
+                        <td>
+                            <!--                            data-bs-toggle="modal" data-bs-target="#employee_details"-->
+                            <a th:href="@{/employees/{id}(id=${emp.getId()})}"
+                               class="btn btn-sm btn-primary">Details</a>
+                            <a th:href="@{/employees/update/{id}(id=${emp.getId()})}" class="btn btn-sm btn-warning"
+                            >Edit</a>
+                            <a href="#" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                               data-bs-target="#employee_delete">Delete</a>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Employee list -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
