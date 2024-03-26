@@ -24,6 +24,11 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    public List<Department> findByDeletedFalse() {
+        return departmentRepository.findByDeletedFalse();
+    }
+
+    @Override
     public Optional<Department> getById(long id) {
         return departmentRepository.findById(id);
     }

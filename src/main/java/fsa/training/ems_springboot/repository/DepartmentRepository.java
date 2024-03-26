@@ -16,7 +16,7 @@ public interface DepartmentRepository extends
         JpaRepository<Department, Long>,
         JpaSpecificationExecutor<Department> {
 
-//    findByName
-
     Optional<Department> findByName(String name);
+
+    List<Department> findByDeletedFalse();
 }

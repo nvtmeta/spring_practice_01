@@ -49,6 +49,9 @@
                 <p class="alert alert-success" th:if="${#strings.equals(param.success, 'add')}">
                     Add Employee success
                 </p>
+                <p class="alert alert-success" th:if="${#strings.equals(param.success, 'delete')}">
+                    Delete Employee success
+                </p>
                 <!--                total items-->
                 <p th:text=" 'Total items: ' + ${employees.getTotalElements()}">
                 </p>
@@ -79,7 +82,9 @@
                                class="btn btn-sm btn-primary">Details</a>
                             <a th:href="@{/employees/update/{id}(id=${emp.getId()})}" class="btn btn-sm btn-warning"
                             >Edit</a>
-                            <a th:href="@{/employees/delete/{id}(id=${emp.getId()})}" class="btn btn-sm btn-danger">Delete</a>
+                            <a
+                                    th:attr="onclick=|deleteEmployee(${emp.getId()})|"
+                                    href="javascript:void(0)" class="btn btn-sm btn-danger">Delete</a>
                         </td>
                     </tr>
                 </table>
@@ -114,6 +119,14 @@
     </div>
 </div>
 <!-- Employee list -->
+<script>
+    function deleteEmployee(id) {
+        if (confirm("Are you sure you want to delete this employee?")) {
+            window.location.href = `/employees/delete/${id}`
+        }
+    }
+
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

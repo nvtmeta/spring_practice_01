@@ -1,22 +1,13 @@
 package fsa.training.ems_springboot.service.impl;
 
-import fsa.training.ems_springboot.enums.EmployeeLevel;
-import fsa.training.ems_springboot.model.dto.EmployeeListDto;
-import fsa.training.ems_springboot.model.entity.Employee;
-import fsa.training.ems_springboot.repository.EmployeeRepository;
-import fsa.training.ems_springboot.service.DepartmentService;
 import fsa.training.ems_springboot.service.EmployeeService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService {
+public class EmployeeServiceImpl implements EmployeeService extends BaseServiceImpl<Employee, Long, EmployeeRepository>
+implements EmployeeService
+        {
     private final EmployeeRepository employeeRepository;
 
     public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
@@ -49,14 +40,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee create(Employee employee) {
+    public void create(Employee employee){
 //        employee.setDeleted(false);
-        return employeeRepository.save(employee);
+        employeeRepository.save(employee);
     }
 
     @Override
-    public Employee update(Employee employee) {
-        return employeeRepository.save(employee);
+    public void update(Employee employee){
+        employeeRepository.save(employee);
     }
 
     @Override
@@ -65,7 +56,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void delete(long id) {
+    public void deleteById(long id){
+        Optional<Employee> employee=employeeRepository.findById(id);
 
+        if(employee.isPresent()){
+        employee.get().setDeleted(true);
+        employeeRepository.save(employee.get());
+        }
     }
-}
+
+
+        }

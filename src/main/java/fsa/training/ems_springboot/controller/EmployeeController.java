@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Controller
@@ -100,11 +99,11 @@ public class EmployeeController {
 
         EmployeeDetailDto employeeDetailDto = new EmployeeDetailDto();
         BeanUtils.copyProperties(employee, employeeDetailDto);
-        Optional<Department> department = departmentService.getById(employee.getDepartment().getId());
-        DepartmentListDto departmentListDto = new DepartmentListDto();
-        BeanUtils.copyProperties(department.get(), departmentListDto);
-        employeeDetailDto.setDepartment(departmentListDto);
-        System.out.println("employeeDetailDto" + employeeDetailDto);
+
+        Department department = employee.getDepartment();
+        if (department != null) {
+            employeeDetailDto.setDepartment(new DepartmentListDto(department.getId(), department.getName()));
+        }
         model.addAttribute("employee", employeeDetailDto);
         return "employee/detail"; // FIXME: Show detail
     }
@@ -136,23 +135,15 @@ public class EmployeeController {
         if (employeeOptional.isEmpty()) {
             return "redirect:/error-not-found";
         }//
-
-        EmployeeUpdateDto employeeUpdateDto = new EmployeeUpdateDto();
+        prepareMasterData(model);
         Employee employee = employeeOptional.get();
+
+        EmployeeFormDto employeeUpdateDto = new EmployeeFormDto();
         BeanUtils.copyProperties(employee, employeeUpdateDto);
 
-
-        Department departmentSave = employee.getDepartment();
-        BeanUtils.copyProperties(departmentSave, employeeUpdateDto);
-//        employeeUpdateDto.setDepartment(new DepartmentListDto(departmentSave.getId(), departmentSave.getName()));
-
-        List<Department> departmentList = departmentService.getALl();
-        List<DepartmentListDto> departmentListDtoList = departmentList.stream()
-                .map(department -> new DepartmentListDto(department.getId(), department.getName()))
-                .collect(Collectors.toList());
-
-        model.addAttribute("departmentList", departmentListDtoList);
-
+        if (employee.getDepartment() != null) {
+            employeeUpdateDto.setDepartmentId(employee.getDepartment().getId());
+        }
 
         model.addAttribute("employeeFormData", employeeUpdateDto);
         model.addAttribute("employeeId", id);
@@ -162,7 +153,7 @@ public class EmployeeController {
 
     @PostMapping("/employees/update/{id}")
     public String updateEmployee(@PathVariable Long id, @Valid
-                                 @ModelAttribute("employeeFormData") EmployeeUpdateDto employeeUpdateDto,
+    @ModelAttribute("employeeFormData") EmployeeFormDto employeeUpdateDto,
                                  BindingResult bindingResult
     ) {
         Optional<Employee> employeeOptional = employeeService.getById(id);
@@ -179,20 +170,18 @@ public class EmployeeController {
 
         //FIXME Update
         BeanUtils.copyProperties(employeeUpdateDto, employee, "email");
-//        save employee
-        // Set the selected department
-        Optional<Department> department = departmentService.getByName(employeeUpdateDto.getDepartmentName());
-        if (department.isEmpty()) {
-            return "redirect:/error-not-found";
+
+//        update department
+        Department department = null;
+        if (employeeUpdateDto.getDepartmentId() != null) {
+            Optional<Department> departmentOptional = departmentService.getById(employeeUpdateDto.getDepartmentId());
+            if (departmentOptional.isPresent()) {
+                department = departmentOptional.get();
+            }
         }
-        employee.setDepartment(department.get());
+        employee.setDepartment(department);
 
         employeeService.update(employee);
-
-//        FIXME NOTIFICATION
-//        TODO Record is updated, sort to top,
-//        use redirect, we can not use addAttribute, so we have to send data by url link
-// send param to list.html
 
         return "redirect:/employees?success=update";
     }
@@ -200,13 +189,9 @@ public class EmployeeController {
     //    add employee
     @GetMapping("/employees/add")
     public String addEmployee(Model model) {
-        model.addAttribute("employeeFormData", new EmployeeAddDto());
 
-        List<Department> departmentList = departmentService.getALl();
-        List<DepartmentListDto> departmentListDtoList = departmentList.stream()
-                .map(department -> new DepartmentListDto(department.getId(), department.getName()))
-                .collect(Collectors.toList());
-        model.addAttribute("departmentList", departmentListDtoList);
+        prepareMasterData(model);
+        model.addAttribute("employeeFormData", new EmployeeFormDto());
 
         return "employee/form";
     }
@@ -214,7 +199,7 @@ public class EmployeeController {
 
     @PostMapping("/employees/add")
 //    @ModelAttribute("employeeAddDTO")
-    public String addEmployee(@ModelAttribute("employeeFormData") @Valid EmployeeAddDto employeeAddDTO,
+    public String addEmployee(@ModelAttribute("employeeFormData") @Valid EmployeeFormDto employeeAddDTO,
                               BindingResult bindingResult) {
 
 //        TODO: validate
@@ -233,15 +218,19 @@ public class EmployeeController {
         }
 
         Employee employee = new Employee();
-
         BeanUtils.copyProperties(employeeAddDTO, employee);
 
-        // Set the selected department
-        Optional<Department> department = departmentService.getByName(employeeAddDTO.getDepartmentName());
-        if (department.isEmpty()) {
-            return "redirect:/error-not-found";
+
+//        we just need only id to update department with employee,
+//        when insert unknown department, we will be constraint,
+        Department department = null;
+        if (employeeAddDTO.getDepartmentId() != null) {
+            Optional<Department> departmentOptional = departmentService.getById(employeeAddDTO.getDepartmentId());
+            if (departmentOptional.isPresent()) {
+                department = departmentOptional.get();
+            }
         }
-        employee.setDepartment(department.get());
+        employee.setDepartment(department);
 
         employeeService.create(employee);
 
@@ -255,10 +244,18 @@ public class EmployeeController {
         if (employeeOptional.isEmpty()) {
             return "redirect:/error-not-found";
         }
-        employeeOptional.get().setDeleted(true);
-        employeeService.update(employeeOptional.get());
+        employeeService.deleteById(id);
 
         return "redirect:/employees?success=delete";
+    }
+
+
+    public void prepareMasterData(Model model) {
+        List<SelectOptionDto> departmentList = departmentService.getALl().stream()
+                .map(department -> new SelectOptionDto(department.getId().toString(), department.getName()))
+                .toList();
+
+        model.addAttribute("departments", departmentList);
     }
 
 }

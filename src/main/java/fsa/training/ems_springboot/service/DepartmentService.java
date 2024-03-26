@@ -10,6 +10,8 @@ public interface DepartmentService {
 
     List<Department> getALl();
 
+    List<Department> findByDeletedFalse();
+
     Optional<Department> getById(long id);
     Optional<Department> getByName(String name);
 

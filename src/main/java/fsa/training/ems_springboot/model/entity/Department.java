@@ -13,6 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class Department {
+    public Department(Long id) {
+        this.id = id;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

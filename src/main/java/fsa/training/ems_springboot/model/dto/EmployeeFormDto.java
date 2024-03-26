@@ -1,7 +1,6 @@
 package fsa.training.ems_springboot.model.dto;
 
 import fsa.training.ems_springboot.enums.EmployeeLevel;
-import fsa.training.ems_springboot.model.entity.Department;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -15,7 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
-public class EmployeeAddDto {
+public class EmployeeFormDto {
 
     private BigDecimal salary;
 

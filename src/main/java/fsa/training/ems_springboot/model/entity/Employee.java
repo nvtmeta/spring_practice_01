@@ -4,6 +4,7 @@ import fsa.training.ems_springboot.enums.EmployeeLevel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
 
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Employee {
+public class Employee extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -30,8 +31,6 @@ public class Employee {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(name = "deleted")
-    private boolean deleted;
 
     @Enumerated(EnumType.STRING)
     private EmployeeLevel level;

@@ -23,13 +23,13 @@ public interface EmployeeService {
     Optional<Employee> getById(long id);
 
 
-    Employee create(Employee employee);
+    void create(Employee employee);
 
 
-    Employee update(Employee employee);
+    void update(Employee employee);
 
     boolean existsByEmail(String email);
 
+    void deleteById(long id);
 
-    void delete(long id);
 }
