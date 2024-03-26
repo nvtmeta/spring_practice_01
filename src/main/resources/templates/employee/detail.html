@@ -15,7 +15,7 @@
             <div class="card shadow-sm border-0 mb-3">
                 <div class="card-header text-bg-dark text-center">Employees List</div>
                 <div class="m-3">
-                    <a href="${pageContext.request.contextPath}/employees/add" class="btn btn-primary">Add Employee</a>
+                    <a th:href="@{/employees/add}" class="btn btn-primary">Add Employee</a>
                 </div>
                <div>
                    <h3 th:text="${employee.getName()}"></h3>

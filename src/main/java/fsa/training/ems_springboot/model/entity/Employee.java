@@ -38,4 +38,7 @@ public class Employee {
 
     private BigDecimal salary;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Department department;
+
 }

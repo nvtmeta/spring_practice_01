@@ -4,6 +4,7 @@ import fsa.training.ems_springboot.enums.EmployeeLevel;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,6 +25,10 @@ public class EmployeeAddDto {
     @NotBlank
     private String email;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
+
     private EmployeeLevel level;
+
+
 }
