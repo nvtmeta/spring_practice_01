@@ -29,4 +29,8 @@ public class EmployeeUpdateDto {
 
     private LocalDate dateOfBirth;
     private EmployeeLevel level;
+
+    private String departmentName;
+
+    private Long departmentId;
 }

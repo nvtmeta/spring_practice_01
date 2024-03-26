@@ -38,7 +38,7 @@ public class Employee {
 
     private BigDecimal salary;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Department department;
 
 }

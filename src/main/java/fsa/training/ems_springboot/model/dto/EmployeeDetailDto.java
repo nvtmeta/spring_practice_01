@@ -23,8 +23,6 @@ public class EmployeeDetailDto {
 
     private EmployeeLevel level;
 
-    private Long departmentId;
-
-    private String departmentName;
+    private DepartmentListDto department;
 
 }

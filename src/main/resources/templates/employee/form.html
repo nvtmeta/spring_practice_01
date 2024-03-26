@@ -28,6 +28,7 @@
                                 <input th:field="*{name}" type="text" class="form-control form-control-sm"
                                        placeholder="Full Name" required>
                             </div>
+<!--                            TODO:fix name init update -->
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Email</label>
@@ -38,7 +39,8 @@
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Date of birth</label>
-                                <input th:field="*{dateOfBirth}" type="date"
+                                <input th:value="${#temporals.format(employeeFormData.dateOfBirth, 'yyyy-MM-dd')}"
+                                       type="date"
                                        class="form-control form-control-sm"
                                        />
                             </div>
@@ -54,8 +56,8 @@
                                         <option selected>Chọn level</option>
                                         <!--                                TODO: get value from database-->
                                         <option
-                                                th:value=" ${level}"
-                                                th:field=" *{level}"
+                                                th:value="${level}"
+                                                th:field="*{level}"
                                                 th:each="level: ${T(fsa.training.ems_springboot.enums.EmployeeLevel).values()}"
                                                 th:text="${level}"
                                         >
@@ -63,19 +65,16 @@
                                     </select>
                                 </div>
                             </div>
+                            <!--                            TODO:fix department name init update -->
                             <div class="col-md-12 mb-3">
-                                <div class="mb-3">
-                                    <select th:field="*{level}" class="form-select form-select-sm"
-                                            aria-label="Department name">
-                                        <option value="" selected>Select a department</option>
-                                        <option
-                                                th:value="${departmentList}"
-                                                th:each="department: ${departmentList}"
-                                                th:text="${department.getName()}"
-                                        >
-                                        </option>
+                                <!--                                <div class="mb-3">-->
+                                <select th:field="*{departmentName}" class="form-select form-select-sm">
+                                    <option value="">Select a department</option>
+                                    <option th:each="department : ${departmentList}"
+                                            th:value="${department.getName()}"
+                                            th:text="${department.getName()}"></option>
                                     </select>
-                                </div>
+                                <!--                                </div>-->
                             </div>
                             <div class="col-md-10">
                                 <a class="btn btn-sm btn-warning">Back to list</a>

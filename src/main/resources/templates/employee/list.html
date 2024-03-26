@@ -71,8 +71,8 @@
                         <td th:text="${emp.getEmail()}"></td>
                         <td th:text="${emp.getDateOfBirth()}"></td>
                         <td th:text="${emp.getLevel()}"></td>
-<!--                        <td th:text="${emp.getDepartmentName()}"></td>-->
-<!--                        <td th:text="${emp.getDepartmentId()}"></td>-->
+                        <td th:text="${emp.getDepartmentName()}"></td>
+                        <td th:text="${emp.getDepartmentId()}"></td>
                         <td>
                             <!--                            data-bs-toggle="modal" data-bs-target="#employee_details"-->
                             <a th:href="@{/employees/{id}(id=${emp.getId()})}"

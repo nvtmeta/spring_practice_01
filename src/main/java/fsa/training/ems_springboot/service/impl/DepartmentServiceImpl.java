@@ -6,6 +6,7 @@ import fsa.training.ems_springboot.service.DepartmentService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -20,5 +21,15 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public List<Department> getALl() {
         return departmentRepository.findAll();
+    }
+
+    @Override
+    public Optional<Department> getById(long id) {
+        return departmentRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Department> getByName(String name) {
+        return departmentRepository.findByName(name);
     }
 }

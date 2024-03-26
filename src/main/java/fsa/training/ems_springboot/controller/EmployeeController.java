@@ -17,8 +17,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -102,10 +100,12 @@ public class EmployeeController {
 
         EmployeeDetailDto employeeDetailDto = new EmployeeDetailDto();
         BeanUtils.copyProperties(employee, employeeDetailDto);
-
-//        set to model attribute
+        Optional<Department> department = departmentService.getById(employee.getDepartment().getId());
+        DepartmentListDto departmentListDto = new DepartmentListDto();
+        BeanUtils.copyProperties(department.get(), departmentListDto);
+        employeeDetailDto.setDepartment(departmentListDto);
+        System.out.println("employeeDetailDto" + employeeDetailDto);
         model.addAttribute("employee", employeeDetailDto);
-
         return "employee/detail"; // FIXME: Show detail
     }
 
@@ -141,15 +141,21 @@ public class EmployeeController {
         Employee employee = employeeOptional.get();
         BeanUtils.copyProperties(employee, employeeUpdateDto);
 
-        model.addAttribute("employeeFormData", employeeUpdateDto);
-        System.out.println("employeeUpdateDto" + employeeUpdateDto.getDateOfBirth());
-        model.addAttribute("employeeId", id);
+
+        Department departmentSave = employee.getDepartment();
+        BeanUtils.copyProperties(departmentSave, employeeUpdateDto);
+//        employeeUpdateDto.setDepartment(new DepartmentListDto(departmentSave.getId(), departmentSave.getName()));
 
         List<Department> departmentList = departmentService.getALl();
         List<DepartmentListDto> departmentListDtoList = departmentList.stream()
                 .map(department -> new DepartmentListDto(department.getId(), department.getName()))
                 .collect(Collectors.toList());
+
         model.addAttribute("departmentList", departmentListDtoList);
+
+
+        model.addAttribute("employeeFormData", employeeUpdateDto);
+        model.addAttribute("employeeId", id);
 
         return "employee/form";
     }
@@ -165,7 +171,7 @@ public class EmployeeController {
             return "redirect:/error-not-found";
         }
         if (bindingResult.hasErrors()) {
-//            System.out.println(bindingResult.getAllErrors());
+            System.out.println(bindingResult.getAllErrors());
             return "employee/form";
         }
 
@@ -173,8 +179,14 @@ public class EmployeeController {
 
         //FIXME Update
         BeanUtils.copyProperties(employeeUpdateDto, employee, "email");
-        System.out.println("employee _update" + employee);
 //        save employee
+        // Set the selected department
+        Optional<Department> department = departmentService.getByName(employeeUpdateDto.getDepartmentName());
+        if (department.isEmpty()) {
+            return "redirect:/error-not-found";
+        }
+        employee.setDepartment(department.get());
+
         employeeService.update(employee);
 
 //        FIXME NOTIFICATION
@@ -207,6 +219,7 @@ public class EmployeeController {
 
 //        TODO: validate
         if (bindingResult.hasErrors()) {
+            System.out.println("bindingResult.getAllErrors()" + bindingResult.getAllErrors());
 //            System.out.println(bindingResult.getAllErrors());
             return "employee/form";
         }
@@ -214,6 +227,7 @@ public class EmployeeController {
 //        check if email is duplicated, using services,
         if (employeeService.existsByEmail(employeeAddDTO.getEmail())) {
             bindingResult.rejectValue("email", "employee.email.exists");
+            System.out.println("bindingResult.getAllErrors()" + bindingResult.getAllErrors());
 
             return "employee/form";
         }
@@ -221,6 +235,14 @@ public class EmployeeController {
         Employee employee = new Employee();
 
         BeanUtils.copyProperties(employeeAddDTO, employee);
+
+        // Set the selected department
+        Optional<Department> department = departmentService.getByName(employeeAddDTO.getDepartmentName());
+        if (department.isEmpty()) {
+            return "redirect:/error-not-found";
+        }
+        employee.setDepartment(department.get());
+
         employeeService.create(employee);
 
         return "redirect:/employees?success=add";

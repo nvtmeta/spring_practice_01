@@ -1,6 +1,7 @@
 package fsa.training.ems_springboot.model.dto;
 
 import fsa.training.ems_springboot.enums.EmployeeLevel;
+import fsa.training.ems_springboot.model.entity.Department;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -30,5 +31,7 @@ public class EmployeeAddDto {
 
     private EmployeeLevel level;
 
+    private String departmentName;
 
+    private Long departmentId;
 }
