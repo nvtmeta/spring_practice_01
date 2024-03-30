@@ -1,12 +1,21 @@
 package fsa.training.ems_springboot.service.impl;
 
+import fsa.training.ems_springboot.enums.EmployeeLevel;
+import fsa.training.ems_springboot.model.dto.EmployeeListDto;
+import fsa.training.ems_springboot.model.entity.Employee;
+import fsa.training.ems_springboot.repository.EmployeeRepository;
 import fsa.training.ems_springboot.service.EmployeeService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService extends BaseServiceImpl<Employee, Long, EmployeeRepository>
-implements EmployeeService
+public class EmployeeServiceImpl implements EmployeeService
         {
     private final EmployeeRepository employeeRepository;
 
@@ -19,7 +28,8 @@ implements EmployeeService
         return (List<Employee>) employeeRepository.findByDeletedFalse();
     }
 
-    @Override
+
+            @Override
     public Page<Employee> getAll(Pageable pageable) {
         return employeeRepository.findAll(pageable);
     }
@@ -64,6 +74,4 @@ implements EmployeeService
         employeeRepository.save(employee.get());
         }
     }
-
-
-        }
+ }

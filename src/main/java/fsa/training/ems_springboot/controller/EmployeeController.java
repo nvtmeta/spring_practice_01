@@ -84,7 +84,7 @@ public class EmployeeController {
 
 //    TODO: Add employee , enum dynamic select level , and read department
 //     from database to add employee with department
-
+// TODO: convert to REST API
 
     @GetMapping("/employees/{id}") // /employees/1, /employees/2
     public String showDetailEmployee(@PathVariable(required = false) Long id, Model model) {
@@ -102,7 +102,7 @@ public class EmployeeController {
 
         Department department = employee.getDepartment();
         if (department != null) {
-            employeeDetailDto.setDepartment(new DepartmentListDto(department.getId(), department.getName()));
+//            employeeDetailDto.setDepartment(new DepartmentListDto(department.getId(), department.getName()));
         }
         model.addAttribute("employee", employeeDetailDto);
         return "employee/detail"; // FIXME: Show detail
