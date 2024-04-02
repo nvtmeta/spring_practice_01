@@ -32,58 +32,40 @@ public class EmployeeResource {
         this.departmentService = departmentService;
     }
 
-    @GetMapping("")
-    public Page<EmployeeListDto> showEmployeeList(
+    @GetMapping
+    public ResponseEntity<Page<EmployeeListDto>> showEmployeeList(
             @RequestParam(name = "q") Optional<String> keywordOpt,
             @RequestParam(name = "level") Optional<EmployeeLevel> levelOpt,
             @PageableDefault(page = 0, size = 3) Pageable pageable) {
 
-        return employeeService
+        Page<EmployeeListDto> employeePage = employeeService
                 .getEmployeePage(keywordOpt.orElse(null), levelOpt.orElse(null), pageable);
+
+        return new ResponseEntity<>(employeePage, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}") // /employees/1, /employees/2
-    public EmployeeDetailDto showDetailEmployee(@PathVariable(required = false) Long id) {
+    @GetMapping("/{id}") // /api/employees/1, /api/employees/2
+    public ResponseEntity<EmployeeDetailDto> showDetailEmployee(@PathVariable Long id) {
         Optional<Employee> employeeOptional = employeeService.getById(id);
 
         if (employeeOptional.isEmpty()) {
-            return null;
+            return ResponseEntity.notFound().build();
         }
 
-        EmployeeDetailDto employeeDetailDto = new EmployeeDetailDto();
-        BeanUtils.copyProperties(employeeOptional.get(), employeeDetailDto);
-
-        Department department = employeeOptional.get().getDepartment();
-        if (department != null) {
-//            employeeDetailDto.setDepartment(new DepartmentListDto(department.getId(), department.getName()));
-        }
-        return employeeDetailDto;
-    }
-
-
-    @PutMapping("/{id}")
-    public void showUpdateEmployee(@PathVariable Long id, @RequestBody EmployeeFormDto employeeUpdateDto) {
-
-        Optional<Employee> employeeOptional = employeeService.getById(id);
-        if (employeeOptional.isEmpty()) {
-            return;
-        }//
         Employee employee = employeeOptional.get();
-
-        BeanUtils.copyProperties(employeeUpdateDto, employee, "email");
+        EmployeeDetailDto employeeDetailDto = new EmployeeDetailDto();
+        BeanUtils.copyProperties(employee, employeeDetailDto);
 
         if (employee.getDepartment() != null) {
-            employeeUpdateDto.setDepartmentId(employee.getDepartment().getId());
+            employeeDetailDto.setDepartmentId(employee.getDepartment().getId());
         }
 
+        return ResponseEntity.ok(employeeDetailDto);
     }
 
-
     @PostMapping
-//    @ModelAttribute("employeeAddDTO")
-    public ResponseEntity addEmployee(@RequestBody @Valid EmployeeFormDto employeeFormDto) {
+    public ResponseEntity<?> addEmployee(@RequestBody @Valid EmployeeFormDto employeeFormDto) {
 
-//TODO : validate
         if (employeeService.existsByEmail(employeeFormDto.getEmail())) {
             return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
         }
@@ -93,7 +75,6 @@ public class EmployeeResource {
 
         if (employeeFormDto.getDepartmentId() != null) {
             employee.setDepartment(new Department(employeeFormDto.getDepartmentId()));
-
         }
 
         employeeService.create(employee);
@@ -101,25 +82,40 @@ public class EmployeeResource {
         return ResponseEntity.status(HttpStatus.CREATED).body(employeeFormDto);
     }
 
-//    @GetMapping("/employees/delete/{id}")
-//    public String deleteEmployee(@PathVariable Long id) {
-//        Optional<Employee> employeeOptional = employeeService.getById(id);
-//
-//        if (employeeOptional.isEmpty()) {
-//            return "redirect:/error-not-found";
-//        }
-//        employeeService.deleteById(id);
-//
-//        return "redirect:/employees?success=delete";
-//    }
-//
-//
-//    public void prepareMasterData(Model model) {
-//        List<SelectOptionDto> departmentList = departmentService.getALl().stream()
-//                .map(department -> new SelectOptionDto(department.getId().toString(), department.getName()))
-//                .toList();
-//
-//        model.addAttribute("departments", departmentList);
-//    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> showUpdateEmployee(@PathVariable Long id, @RequestBody EmployeeFormDto employeeUpdateDto) {
+
+        Optional<Employee> employeeOptional = employeeService.getById(id);
+        if (employeeOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Employee employee = employeeOptional.get();
+
+        BeanUtils.copyProperties(employeeUpdateDto, employee, "email");
+
+        if (employee.getDepartment() != null) {
+            employee.setDepartment(new Department(employeeUpdateDto.getDepartmentId()));
+        }
+
+        employeeService.update(employee);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
+        Optional<Employee> employeeOptional = employeeService.getById(id);
+
+        if (employeeOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        employeeService.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

@@ -26,5 +26,6 @@ public class EmployeeDetailDto {
 
     private BigDecimal salary;
 
+    private Long departmentId;
 
 }
