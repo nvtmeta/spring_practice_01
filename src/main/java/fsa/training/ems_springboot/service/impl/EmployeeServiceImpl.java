@@ -4,6 +4,7 @@ import fsa.training.ems_springboot.enums.EmployeeLevel;
 import fsa.training.ems_springboot.model.dto.EmployeeListDto;
 import fsa.training.ems_springboot.model.entity.Employee;
 import fsa.training.ems_springboot.repository.EmployeeRepository;
+import fsa.training.ems_springboot.security.SecurityUtils;
 import fsa.training.ems_springboot.service.EmployeeService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +42,11 @@ public class EmployeeServiceImpl implements EmployeeService
 
     @Override
     public Page<EmployeeListDto> getEmployeePage(String keyword, EmployeeLevel level, Pageable pageable) {
-        return employeeRepository.getEmployeePage(keyword, level, pageable);
+        if (SecurityUtils.isAdmin()) {
+            return employeeRepository.getEmployeePageWithoutSalary(keyword, level, pageable);
+        } else {
+            return employeeRepository.getEmployeePage(keyword, level, pageable);
+        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package fsa.training.ems_springboot.security;
 
-import fsa.training.ems_springboot.model.entity.Authority;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,7 +29,7 @@ public class SecurityUtils {
         Authentication authentication = securityContext.getAuthentication();
 
         return authentication.getAuthorities().stream()
-                .map(authority -> ((Authority) authority).getName().replaceAll("ROLE_", ""))
+                .map(authority -> authority.getAuthority().replaceAll("ROLE_", ""))
                 .toList();
     }
 

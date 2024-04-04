@@ -62,10 +62,10 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Date Of Birth</th>
-                        <th>Level</th>
                         <th>Department name</th>
                         <th>Department ID</th>
                         <th>Level</th>
+                        <th th:if="${isAdmin}">Salary</th>
                         <th>Action</th>
                     </tr>
                     <tr th:each="emp : ${employees}">
@@ -73,14 +73,15 @@
                         <td th:text="${emp.getName()}"></td>
                         <td th:text="${emp.getEmail()}"></td>
                         <td th:text="${emp.getDateOfBirth()}"></td>
-                        <td th:text="${emp.getLevel()}"></td>
                         <td th:text="${emp.getDepartmentName()}"></td>
                         <td th:text="${emp.getDepartmentId()}"></td>
+                        <td th:text="${emp.getLevel()}"></td>
+                        <td th:if="${isAdmin}" th:text="${emp.getSalary()}"></td>
                         <td>
                             <!--                            data-bs-toggle="modal" data-bs-target="#employee_details"-->
                             <a th:href="@{/employees/{id}(id=${emp.getId()})}"
                                class="btn btn-sm btn-primary">Details</a>
-                            <a th:href="@{/employees/update/{id}(id=${emp.getId()})}" class="btn btn-sm btn-warning"
+                            <a th:if="${isAdmin}" th:href="@{/employees/update/{id}(id=${emp.getId()})}" class="btn btn-sm btn-warning"
                             >Edit</a>
                             <a
                                     th:attr="onclick=|deleteEmployee(${emp.getId()})|"

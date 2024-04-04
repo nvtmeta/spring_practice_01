@@ -24,7 +24,7 @@ public class SecurityUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Account> accountOptional = accountRepository.findByUsernameAndActivatedTrue(username);
+        Optional<Account> accountOptional = accountRepository.findByUsernameIgnoreCaseAndActivatedTrue(username);
         System.out.println("accountOptional" + accountOptional);
         if (accountOptional.isEmpty()) {
             System.out.println("username: " + username);

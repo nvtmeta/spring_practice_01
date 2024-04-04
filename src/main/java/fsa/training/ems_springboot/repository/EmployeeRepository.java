@@ -30,8 +30,8 @@ public interface EmployeeRepository extends
 
     //    keyword for name or email
     @Query(value = """
-            SELECT new fsa.training.ems_springboot.model.dto.EmployeeListDto(e.id, e.name, e.email, e.dateOfBirth, e.level ,
-                         d.id, d.name ) FROM Employee e left join e.department d on d.deleted = false
+            SELECT new fsa.training.ems_springboot.model.dto.EmployeeListDto(e.id, e.name, e.email, e.dateOfBirth,
+             e.level ,e.salary,d.id, d.name ) FROM Employee e left join e.department d on d.deleted = false
                         WHERE  e.deleted = false  AND
                         (:keyword is null OR (lower(e.name) LIKE lower(concat('%', :keyword, '%') ))  OR
                         lower(e.email) LIKE lower(concat('%', :keyword, '%')))
@@ -40,4 +40,16 @@ public interface EmployeeRepository extends
 //    or isDeleted false will error when employee don't belong any department
 //    avoid e.department.name vs d.name, should use d.name because first one is inner join ,
     Page<EmployeeListDto> getEmployeePage(@Param("keyword") String keyword, @Param("level") EmployeeLevel level, Pageable pageable);
+    @Query(value = """
+            SELECT new fsa.training.ems_springboot.model.dto.EmployeeListDto(e.id, e.name, e.email, e.dateOfBirth,
+             e.level ,d.id, d.name ) FROM Employee e left join e.department d on d.deleted = false
+                        WHERE  e.deleted = false  AND
+                        (:keyword is null OR (lower(e.name) LIKE lower(concat('%', :keyword, '%') ))  OR
+                        lower(e.email) LIKE lower(concat('%', :keyword, '%')))
+                        AND (:level is null OR e.level = :level)
+            """)
+//    or isDeleted false will error when employee don't belong any department
+//    avoid e.department.name vs d.name, should use d.name because first one is inner join ,
+    Page<EmployeeListDto> getEmployeePageWithoutSalary(@Param("keyword") String keyword, @Param("level") EmployeeLevel level,
+                                                       Pageable pageable);
 }

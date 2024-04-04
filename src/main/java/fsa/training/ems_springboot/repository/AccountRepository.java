@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Integer> {
 
-    Optional<Account> findByUsernameAndActivatedTrue(String username);
+    Optional<Account> findByUsernameIgnoreCaseAndActivatedTrue(String username);
 }

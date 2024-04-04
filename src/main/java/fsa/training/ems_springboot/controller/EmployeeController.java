@@ -2,9 +2,13 @@ package fsa.training.ems_springboot.controller;
 
 
 import fsa.training.ems_springboot.enums.EmployeeLevel;
-import fsa.training.ems_springboot.model.dto.*;
+import fsa.training.ems_springboot.model.dto.EmployeeDetailDto;
+import fsa.training.ems_springboot.model.dto.EmployeeFormDto;
+import fsa.training.ems_springboot.model.dto.EmployeeListDto;
+import fsa.training.ems_springboot.model.dto.SelectOptionDto;
 import fsa.training.ems_springboot.model.entity.Department;
 import fsa.training.ems_springboot.model.entity.Employee;
+import fsa.training.ems_springboot.security.SecurityUtils;
 import fsa.training.ems_springboot.service.DepartmentService;
 import fsa.training.ems_springboot.service.EmployeeService;
 import jakarta.validation.Valid;
@@ -12,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -78,6 +83,9 @@ public class EmployeeController {
                 .getEmployeePage(keywordOpt.orElse(null), levelOpt.orElse(null), pageable);
 
         model.addAttribute("employees", employeePage);
+
+        boolean isAdmin = SecurityUtils.isAdmin();
+        model.addAttribute("isAdmin", isAdmin);
         return "employee/list";
     }
 
@@ -130,6 +138,10 @@ public class EmployeeController {
 
     @GetMapping("/employees/update/{id}")
     public String showUpdateEmployee(@PathVariable Long id, Model model) {
+        if (!SecurityUtils.isAdmin()) {
+            // If the current user is not an admin, redirect to an error page or unauthorized page
+            return "redirect:/error-unauthorized";
+        }
 
         Optional<Employee> employeeOptional = employeeService.getById(id);
         if (employeeOptional.isEmpty()) {
@@ -157,7 +169,10 @@ public class EmployeeController {
                                  BindingResult bindingResult
     ) {
         Optional<Employee> employeeOptional = employeeService.getById(id);
-
+        if (!SecurityUtils.isAdmin()) {
+            // If the current user is not an admin, redirect to an error page or unauthorized page
+            return "redirect:/error-unauthorized";
+        }
         if (employeeOptional.isEmpty()) {
             return "redirect:/error-not-found";
         }
@@ -238,7 +253,12 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String deleteEmployee(@PathVariable Long id) {
+        if (!SecurityUtils.isAdmin()) {
+            // If the current user is not an admin, redirect to an error page or unauthorized page
+            return "redirect:/error-unauthorized";
+        }
         Optional<Employee> employeeOptional = employeeService.getById(id);
 
         if (employeeOptional.isEmpty()) {
